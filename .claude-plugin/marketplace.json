@@ -1,0 +1,14 @@
+{
+  "name": "yami",
+  "description": "The plugins of Yami, the LLM wiki in your Obsidian vault.",
+  "owner": { "name": "nathanaday", "url": "https://github.com/nathanaday" },
+  "plugins": [
+    {
+      "name": "yami-wiki",
+      "source": "./",
+      "description": "Your Yami wiki, for an agent outside the vault: search, read, match, lint, and ingest with the same tools the vault's agents have, from any project.",
+      "category": "knowledge",
+      "tags": ["obsidian", "wiki", "knowledge-base", "mcp"]
+    }
+  ]
+}

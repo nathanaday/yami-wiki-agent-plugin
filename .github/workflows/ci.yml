@@ -1,0 +1,23 @@
+# The checks of every change: on each push to main and on each pull request. The committed dist/ must be the
+# build of the source, since a plugin install copies the repository and runs no build.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Check that dist/ is the build of the source
+        run: git diff --exit-code --stat dist

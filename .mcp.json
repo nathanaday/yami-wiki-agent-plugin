@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "yami-wiki": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/dist/server.mjs"],
+      "env": { "YAMI_WIKI_VAULT": "${user_config.vault}" }
+    }
+  }
+}

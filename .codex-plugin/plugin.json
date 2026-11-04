@@ -1,0 +1,19 @@
+{
+  "name": "yami-wiki",
+  "version": "0.1.0",
+  "description": "Your Yami wiki, for an agent outside the vault: search, read, match, lint, and ingest with the same tools the vault's agents have, from any project.",
+  "author": { "name": "nathanaday", "url": "https://github.com/nathanaday" },
+  "homepage": "https://github.com/nathanaday/yami-wiki-agent-plugin",
+  "repository": "https://github.com/nathanaday/yami-wiki-agent-plugin",
+  "license": "MIT",
+  "keywords": ["obsidian", "wiki", "knowledge-base", "yami", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Yami Wiki",
+    "shortDescription": "Search, read, lint, and ingest your Obsidian LLM wiki from any project.",
+    "developerName": "nathanaday",
+    "category": "Knowledge",
+    "websiteURL": "https://github.com/nathanaday/yami-wiki-agent-plugin"
+  }
+}
