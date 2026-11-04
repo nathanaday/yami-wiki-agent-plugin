@@ -1,0 +1,18 @@
+{
+  "name": "yami-wiki",
+  "displayName": "Yami Wiki",
+  "version": "0.1.0",
+  "description": "Your Yami wiki, for an agent outside the vault: search, read, match, lint, and ingest with the same tools the vault's agents have, from any project.",
+  "author": { "name": "nathanaday", "url": "https://github.com/nathanaday" },
+  "homepage": "https://github.com/nathanaday/yami-wiki-agent-plugin",
+  "repository": "https://github.com/nathanaday/yami-wiki-agent-plugin",
+  "license": "MIT",
+  "keywords": ["obsidian", "wiki", "knowledge-base", "yami", "mcp"],
+  "userConfig": {
+    "vault": {
+      "type": "directory",
+      "title": "Vault",
+      "description": "The folder of your Obsidian vault with Yami Wiki. Leave it empty to point the server at a vault from a session, with /yami-wiki:connect."
+    }
+  }
+}

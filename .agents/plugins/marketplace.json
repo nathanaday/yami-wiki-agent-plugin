@@ -1,0 +1,13 @@
+{
+  "name": "yami",
+  "interface": { "displayName": "Yami" },
+  "plugins": [
+    {
+      "name": "yami-wiki",
+      "source": { "source": "local", "path": "./" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Knowledge",
+      "description": "Your Yami wiki, for an agent outside the vault: search, read, match, lint, and ingest with the same tools the vault's agents have, from any project."
+    }
+  ]
+}
