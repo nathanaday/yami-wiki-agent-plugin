@@ -1,0 +1,19 @@
+version: 1
+suites:
+  all:
+    command: cd yami-wiki-agent-plugin && npm ci && npm run build && npx vitest run test/unit --reporter=default --reporter=junit --outputFile=/hikari/private/reports/all.xml
+    description: Runs every test of the partition.
+tests:
+  yami-wiki-agent-plugin/test/unit/version.test.ts: ["[[ship-plugin-manifests]]"]
+  yami-wiki-agent-plugin/test/unit/config.test.ts: ["[[connect-vault]]"]
+  yami-wiki-agent-plugin/test/unit/server.test.ts: ["[[serve-wiki-tools]]"]
+  yami-wiki-agent-plugin/test/unit/tools.test.ts: ["[[serve-wiki-tools]]"]
+  "test/unit/tools.test.ts > with no vault": ["[[serve-wiki-tools]]", "[[connect-vault]]"]
+  "test/unit/tools.test.ts > with the vault of the option > reports the vault and its counts, and enables the wiki module in it as the Obsidian plugin does": ["[[connect-vault]]"]
+  "test/unit/tools.test.ts > with the vault of the option > reads a note by path or by link, with its file on disk": ["[[read-wiki-note]]"]
+  "test/unit/tools.test.ts > with the vault of the option > proposes a change with the module's tool, which wiki_changes then lists, and nothing under wiki/ changes": ["[[list-proposed-changes]]", "[[serve-wiki-tools]]"]
+  "test/unit/tools.test.ts > with the vault of the option > switches to another vault with set, records it, and warns that the option wins at the next start": ["[[connect-vault]]"]
+  "test/unit/tools.test.ts > with the vault of the config file": ["[[connect-vault]]"]
+gaps:
+  ingest-files: [No test runs an ingest.]
+  guide-with-skills: [The skills have no tests.]
