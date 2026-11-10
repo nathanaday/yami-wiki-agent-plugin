@@ -40,7 +40,7 @@ async function call(tool: AgentTool, input: unknown): Promise<any> {
 describe("the tool list", () => {
   it("is the vault, the wiki module's tools, and the reads, with the module's definitions and no vault needed", () => {
     const names = serverTools(new Host({ env: {}, cwd: scratch, configFile })).map((tool) => tool.name);
-    expect(names).toEqual(["wiki_vault", "wiki_search", "wiki_match", "wiki_lint", "wiki_tags", "wiki_neighbors", "wiki_chunks", "wiki_citations", "wiki_change", "wiki_ingest", "wiki_figure", "wiki_export", "wiki_import", "wiki_checkout", "wiki_read", "wiki_changes"]);
+    expect(names).toEqual(["wiki_vault", "wiki_search", "wiki_match", "wiki_lint", "wiki_tags", "wiki_templates", "wiki_neighbors", "wiki_chunks", "wiki_citations", "wiki_change", "wiki_ingest", "wiki_figure", "wiki_export", "wiki_import", "wiki_checkout", "wiki_read", "wiki_changes"]);
     const search = wikiToolDefinitions().find((tool) => tool.name === "wiki_search")!;
     expect(search.readOnly).toBe(true);
     expect(search.description).toContain("Ranked search over every note of the vault");
@@ -78,7 +78,7 @@ describe("with the vault of the option", () => {
 
   it("reports the vault and its counts, and enables the wiki module in it as the Obsidian plugin does", async () => {
     const report = await call(tools(host!).wiki_vault!, {});
-    expect(report).toEqual({ vault, source: "from the plugin's vault option or YAMI_WIKI_VAULT", notes: 5, topics: 2, sources: 1, proposed: 0, agent: "claude", config: configFile });
+    expect(report).toEqual({ vault, source: "from the plugin's vault option or YAMI_WIKI_VAULT", notes: 5, pages: 2, sources: 1, proposed: 0, agent: "claude", config: configFile });
     expect(existsSync(path.join(vault, "internal", "wiki", "wiki.md"))).toBe(true);
     expect(existsSync(path.join(vault, "internal", "wiki", "skills", "ingest", "SKILL.md"))).toBe(true);
     expect(existsSync(path.join(vault, "Yami.base"))).toBe(false);
@@ -90,10 +90,10 @@ describe("with the vault of the option", () => {
     const t = tools(host!);
     const { hits, algorithm } = await call(t.wiki_search!, { text: "ripe levain", limit: 2 });
     expect(algorithm).toBe("bm25");
-    expect(hits[0].path).toBe("wiki/topics/Levain.md");
+    expect(hits[0].path).toBe("wiki/pages/Levain.md");
     const { matches } = await call(t.wiki_match!, { names: ["Preferment", "Croissant"] });
-    expect(matches.map((m: any) => [m.name, m.match, m.path])).toEqual([["Preferment", "hit", "wiki/topics/Levain.md"], ["Croissant", "new", undefined]]);
-    const { findings } = await call(t.wiki_lint!, { folder: "wiki/topics" });
+    expect(matches.map((m: any) => [m.name, m.match, m.path])).toEqual([["Preferment", "hit", "wiki/pages/Levain.md"], ["Croissant", "new", undefined]]);
+    const { findings } = await call(t.wiki_lint!, { folder: "wiki/pages" });
     expect(Array.isArray(findings)).toBe(true);
     const { tags } = await call(t.wiki_tags!, {});
     expect(tags.map((tag: any) => tag.tag)).toContain("baking/sourdough");
@@ -102,7 +102,7 @@ describe("with the vault of the option", () => {
   it("reads a note by path or by link, with its file on disk", async () => {
     const t = tools(host!);
     const byLink = await call(t.wiki_read!, { note: "[[Levain|the levain]]" });
-    expect(byLink).toMatchObject({ path: "wiki/topics/Levain.md", file: path.join(vault, "wiki/topics/Levain.md"), properties: { type: "topic", aliases: ["Preferment"] } });
+    expect(byLink).toMatchObject({ path: "wiki/pages/Levain.md", file: path.join(vault, "wiki/pages/Levain.md"), properties: { type: "topic", aliases: ["Preferment"] } });
     expect(byLink.body).toContain("# Levain");
     const byPath = await call(t.wiki_read!, { note: "notes/Observing log.md" });
     expect(byPath.properties).toEqual({ tags: ["astronomy"] });
@@ -119,10 +119,10 @@ describe("with the vault of the option", () => {
     const proposal = await call(t.wiki_change!, {
       title: "Add Autolyse",
       notes: "A term the book uses.",
-      writes: [{ op: "create", path: "wiki/topics/Autolyse.md", properties: { description: "A rest of flour and water before the salt and the levain go in.", tags: ["baking/sourdough"], sources: ["[[Bread book (source)]]"] }, body: "# Autolyse\n\nFlour and water rest before the rest goes in ([[Bread book (source)]]).\n", why: "the book's term" }],
+      writes: [{ op: "create", path: "wiki/pages/Autolyse.md", properties: { description: "A rest of flour and water before the salt and the levain go in.", tags: ["baking/sourdough"], sources: ["[[Bread book (source)]]"] }, body: "# Autolyse\n\nFlour and water rest before the rest goes in ([[Bread book (source)]]).\n", why: "the book's term" }],
     });
     expect(proposal).toMatchObject({ status: "proposed", creates: 1, modifies: 0, removes: 0 });
-    expect(existsSync(path.join(vault, "wiki/topics/Autolyse.md"))).toBe(false);
+    expect(existsSync(path.join(vault, "wiki/pages/Autolyse.md"))).toBe(false);
     const { changes, approval } = await call(t.wiki_changes!, {});
     expect(changes).toHaveLength(1);
     expect(changes[0]).toMatchObject({ path: proposal.path, file: path.join(vault, proposal.path), title: "Add Autolyse", status: "proposed", label: "Waiting for approval", creates: 1 });
@@ -138,12 +138,12 @@ describe("with the vault of the option", () => {
     await call(t.wiki_vault!, {});
     const other = path.join(scratch, "Other");
     cpSync(FIXTURE, other, { recursive: true });
-    rmSync(path.join(other, "wiki", "topics", "Levain.md"));
+    rmSync(path.join(other, "wiki", "pages", "Levain.md"));
     const report = await call(t.wiki_vault!, { set: other });
-    expect(report).toMatchObject({ vault: other, source: `from ${configFile}`, topics: 1, warning: expect.stringContaining(`names ${vault}, which wins at the next start`) });
+    expect(report).toMatchObject({ vault: other, source: `from ${configFile}`, pages: 1, warning: expect.stringContaining(`names ${vault}, which wins at the next start`) });
     expect(JSON.parse(readFileSync(configFile, "utf8"))).toEqual({ vault: other });
     const { hits } = await call(t.wiki_search!, { text: "levain" });
-    expect(hits.map((hit: any) => hit.path)).not.toContain("wiki/topics/Levain.md");
+    expect(hits.map((hit: any) => hit.path)).not.toContain("wiki/pages/Levain.md");
     const plain = path.join(scratch, "plain");
     mkdirSync(plain);
     const refused = await runTool(t.wiki_vault!, { set: plain }, signal);

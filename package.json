@@ -1,6 +1,6 @@
 {
   "name": "yami-wiki-agent-plugin",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "The wiki tools of Yami Wiki for Claude Code and Codex: point an agent outside your vault at your wiki, and it searches, reads, lints, and ingests with the same tools the vault's agents have.",
   "license": "MIT",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
-    "yami": "https://github.com/nathanaday/yami/releases/download/yami-0.23.0/yami-0.23.0.tgz",
+    "yami": "https://github.com/nathanaday/yami/releases/download/yami-0.24.0/yami-0.24.0.tgz",
     "zod": "^4.6.7"
   },
   "devDependencies": {
