@@ -40,7 +40,7 @@ async function call(tool: AgentTool, input: unknown): Promise<any> {
 describe("the tool list", () => {
   it("is the vault, the wiki module's tools, and the reads, with the module's definitions and no vault needed", () => {
     const names = serverTools(new Host({ env: {}, cwd: scratch, configFile })).map((tool) => tool.name);
-    expect(names).toEqual(["wiki_vault", "wiki_search", "wiki_match", "wiki_lint", "wiki_tags", "wiki_neighbors", "wiki_chunks", "wiki_change", "wiki_ingest", "wiki_checkout", "wiki_read", "wiki_changes"]);
+    expect(names).toEqual(["wiki_vault", "wiki_search", "wiki_match", "wiki_lint", "wiki_tags", "wiki_neighbors", "wiki_chunks", "wiki_citations", "wiki_change", "wiki_ingest", "wiki_figure", "wiki_export", "wiki_import", "wiki_checkout", "wiki_read", "wiki_changes"]);
     const search = wikiToolDefinitions().find((tool) => tool.name === "wiki_search")!;
     expect(search.readOnly).toBe(true);
     expect(search.description).toContain("Ranked search over every note of the vault");
@@ -67,7 +67,7 @@ describe("with no vault", () => {
     mkdirSync(plain);
     host = new Host({ env: { YAMI_WIKI_VAULT: plain }, cwd: scratch, configFile });
     const result = await runTool(tools(host).wiki_search!, { text: "x" }, signal);
-    expect(result).toEqual({ isError: true, text: `${plain} is not an Obsidian vault: it has no .obsidian/ folder and no internal/wiki/ folder. Open it in Obsidian with Yami Wiki on first. (from the plugin's vault option or YAMI_WIKI_VAULT)` });
+    expect(result).toEqual({ isError: true, text: `${plain} is not an Obsidian vault: it has no .obsidian/ folder, no .yami.json, and no internal/wiki/ folder. Open it in Obsidian with Yami Wiki on first. (from the plugin's vault option or YAMI_WIKI_VAULT)` });
   });
 });
 
@@ -81,7 +81,7 @@ describe("with the vault of the option", () => {
     expect(report).toEqual({ vault, source: "from the plugin's vault option or YAMI_WIKI_VAULT", notes: 5, topics: 2, sources: 1, proposed: 0, agent: "claude", config: configFile });
     expect(existsSync(path.join(vault, "internal", "wiki", "wiki.md"))).toBe(true);
     expect(existsSync(path.join(vault, "internal", "wiki", "skills", "ingest", "SKILL.md"))).toBe(true);
-    expect(existsSync(path.join(vault, "Yami.base"))).toBe(true);
+    expect(existsSync(path.join(vault, "Yami.base"))).toBe(false);
     expect(existsSync(configFile), "the option writes no config").toBe(false);
     expect(instructions(host!)).toContain(`The vault is ${vault} (from the plugin's vault option or YAMI_WIKI_VAULT).`);
   });
@@ -147,7 +147,7 @@ describe("with the vault of the option", () => {
     const plain = path.join(scratch, "plain");
     mkdirSync(plain);
     const refused = await runTool(t.wiki_vault!, { set: plain }, signal);
-    expect(refused).toEqual({ isError: true, text: `${plain} is not an Obsidian vault: it has no .obsidian/ folder and no internal/wiki/ folder. Open it in Obsidian with Yami Wiki on first.` });
+    expect(refused).toEqual({ isError: true, text: `${plain} is not an Obsidian vault: it has no .obsidian/ folder, no .yami.json, and no internal/wiki/ folder. Open it in Obsidian with Yami Wiki on first.` });
     expect((await call(t.wiki_vault!, {})).vault, "a refused set changes nothing").toBe(other);
   });
 });

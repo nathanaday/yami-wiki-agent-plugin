@@ -71,7 +71,10 @@ describe("the vault", () => {
     const plain = folder();
     expect(vaultProblem(obsidian)).toBeUndefined();
     expect(vaultProblem(yami)).toBeUndefined();
-    expect(vaultProblem(plain)).toMatch(/is not an Obsidian vault: it has no \.obsidian\/ folder and no internal\/wiki\/ folder/);
+    expect(vaultProblem(plain)).toMatch(/is not an Obsidian vault: it has no \.obsidian\/ folder, no \.yami\.json, and no internal\/wiki\/ folder/);
+    const moved = folder();
+    writeFileSync(path.join(moved, ".yami.json"), '{ "wiki": "library/wiki" }');
+    expect(vaultProblem(moved)).toBeUndefined();
     expect(vaultProblem(path.join(plain, "missing"))).toMatch(/is not a folder\.$/);
     writeFileSync(path.join(plain, "file"), "");
     expect(vaultProblem(path.join(plain, "file"))).toMatch(/is not a folder\.$/);

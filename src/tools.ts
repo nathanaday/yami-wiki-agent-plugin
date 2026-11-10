@@ -5,7 +5,8 @@ import path from "node:path";
 import { defineTool, Yami, z, type AgentTool } from "yami";
 import { readDocument } from "yami/document";
 import { FsVault } from "yami/testing";
-import { CHANGE_STATUS_LABELS, SOURCES, TOPICS } from "yami/wiki";
+import { DEFAULT_FOLDERS, readFolders } from "yami/document";
+import { CHANGE_STATUS_LABELS } from "yami/wiki";
 import { describeSource, Host, NoVault, type Connection } from "./host.js";
 
 /** How a person approves: the server has no act of approval, by design. */
@@ -79,7 +80,7 @@ export function hostTools(host: Host): AgentTool[] {
   return [
     defineTool({
       name: "wiki_vault",
-      description: `The vault this server works in, with its counts: notes, topics, sources, and the change plans that wait for approval. With set, points the server at another vault: the folder of an Obsidian vault that has Yami Wiki (its .obsidian/ or internal/wiki/ folder is checked first), recorded for the next start. Call it with nothing when a wiki tool says that no vault is connected, or to tell the user where the wiki is.`,
+      description: `The vault this server works in, with its counts: notes, topics, sources, and the change plans that wait for approval. With set, points the server at another vault: the folder of an Obsidian vault that has Yami Wiki (its .obsidian/ folder, .yami.json, or internal/wiki/ folder is checked first), recorded for the next start. Call it with nothing when a wiki tool says that no vault is connected, or to tell the user where the wiki is.`,
       input: { set: z.string().optional().describe("The vault to work in from now on: an absolute path, or one that starts with ~.") },
       title: ({ set }) => (set ? `Use the vault ${set.slice(0, 60)}` : "The wiki's vault"),
       run: async ({ set }) => {
@@ -171,8 +172,14 @@ export function serverTools(host: Host): AgentTool[] {
 export function instructions(host: Host): string {
   const resolved = host.resolved();
   const where = resolved ? `The vault is ${resolved.root} (${describeSource(resolved.source, host.configFile)}).` : host.noVault();
+  let folders = DEFAULT_FOLDERS;
+  try {
+    if (resolved) folders = readFolders(resolved.root);
+  } catch {
+    // A bad .yami.json is the connection's to report, at the first tool call.
+  }
   return [
-    `The Yami wiki of an Obsidian vault: topics in ${TOPICS}/ cited to sources in ${SOURCES}/, and every other note of the vault, outside your working directory. ${where}`,
+    `The Yami wiki of an Obsidian vault: topics in ${folders.topics}/ cited to sources in ${folders.sources}/, and every other note of the vault, outside your working directory. ${where}`,
     `To answer from the wiki: wiki_search, then wiki_read the best notes (or Read <vault>/<path>), follow a link one hop when needed, and answer with a [[link]] on each claim. Say what the wiki does not cover instead of filling the gap from general knowledge without saying so. wiki_match says where names stand; wiki_neighbors walks the tags.`,
     `The wiki changes only through wiki_change, which proposes a change document, and wiki_ingest, which captures files and runs an ingest session that proposes one. ${APPROVAL} Never write a file of the vault yourself.`,
   ].join("\n");

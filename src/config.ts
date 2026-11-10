@@ -61,20 +61,20 @@ export function expandHome(file: string, home = homedir()): string {
   return file === "~" ? home : file.startsWith("~/") ? path.join(home, file.slice(2)) : file;
 }
 
-/** Whether a folder holds a Yami wiki: the wiki module's folder, `internal/wiki/`. */
+/** Whether a folder holds a Yami vault: Yami's folder settings, `.yami.json`, or the wiki module's default folder, `internal/wiki/`. */
 export function isYamiVault(folder: string): boolean {
-  return isFolder(path.join(folder, "internal", "wiki"));
+  return existsSync(path.join(folder, ".yami.json")) || isFolder(path.join(folder, "internal", "wiki"));
 }
 
 /**
  * Why a folder cannot be the vault, or undefined when it can: it is a folder, and an Obsidian vault
- * (`.obsidian/`) or a Yami vault (`internal/wiki/`). The server never turns another folder into a vault:
- * a mistyped path would get `Yami.base` and `internal/` written into it.
+ * (`.obsidian/`) or a Yami vault (`.yami.json` or `internal/wiki/`). The server never turns another folder
+ * into a vault: a mistyped path would get Yami's internal folder written into it.
  */
 export function vaultProblem(folder: string): string | undefined {
   if (!isFolder(folder)) return `${folder} is not a folder.`;
   if (isYamiVault(folder) || isFolder(path.join(folder, ".obsidian"))) return undefined;
-  return `${folder} is not an Obsidian vault: it has no .obsidian/ folder and no internal/wiki/ folder. Open it in Obsidian with Yami Wiki on first.`;
+  return `${folder} is not an Obsidian vault: it has no .obsidian/ folder, no .yami.json, and no internal/wiki/ folder. Open it in Obsidian with Yami Wiki on first.`;
 }
 
 export type VaultSource = "option" | "config" | "cwd";
