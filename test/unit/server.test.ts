@@ -40,7 +40,7 @@ describe("the server over stdio", () => {
     expect(client.getInstructions()).toContain(`The vault is ${vault}`);
     const { tools } = await client.listTools();
     const byName = Object.fromEntries(tools.map((tool) => [tool.name, tool]));
-    expect(Object.keys(byName).sort()).toEqual(["wiki_change", "wiki_changes", "wiki_checkout", "wiki_chunks", "wiki_ingest", "wiki_lint", "wiki_match", "wiki_neighbors", "wiki_read", "wiki_search", "wiki_tags", "wiki_vault"]);
+    expect(Object.keys(byName).sort()).toEqual(["wiki_change", "wiki_changes", "wiki_checkout", "wiki_chunks", "wiki_citations", "wiki_export", "wiki_figure", "wiki_import", "wiki_ingest", "wiki_lint", "wiki_match", "wiki_neighbors", "wiki_read", "wiki_search", "wiki_tags", "wiki_vault"]);
     expect(byName.wiki_search!.annotations).toMatchObject({ readOnlyHint: true });
     expect(byName.wiki_change!.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: false });
     expect(byName.wiki_search!.inputSchema).toMatchObject({ type: "object", properties: { text: { type: "string" } } });

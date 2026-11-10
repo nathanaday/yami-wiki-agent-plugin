@@ -1,0 +1,30 @@
+version: 1
+parts:
+  - path: yami-wiki-agent-plugin/scripts/
+    description: Build and set-version scripts.
+  - path: yami-wiki-agent-plugin/dist/server.mjs
+    description: The built server, tracked.
+  - path: yami-wiki-agent-plugin/test/
+    description: Unit tests and the fixture vault.
+  - path: yami-wiki-agent-plugin/.github/
+    description: CI and release workflows.
+features:
+  serve-wiki-tools:
+    code: [yami-wiki-agent-plugin/src/server.ts, yami-wiki-agent-plugin/src/tools.ts, yami-wiki-agent-plugin/.mcp.json]
+    notes: wikiTools wraps the library's wiki_ tools onto the host's current vault; instructions() is the server text.
+  connect-vault:
+    code: [yami-wiki-agent-plugin/src/host.ts, yami-wiki-agent-plugin/src/config.ts, yami-wiki-agent-plugin/skills/connect/]
+    notes: wiki_vault is in tools.ts hostTools.
+  read-wiki-note:
+    code: [yami-wiki-agent-plugin/src/tools.ts]
+    notes: wiki_read in hostTools.
+  list-proposed-changes:
+    code: [yami-wiki-agent-plugin/src/tools.ts]
+    notes: wiki_changes in hostTools.
+  ingest-files:
+    code: [yami-wiki-agent-plugin/src/host.ts, yami-wiki-agent-plugin/skills/ingest/]
+    notes: wiki_ingest comes from the library; agentsFor picks the harness; server.ts deletes CLAUDECODE.
+  guide-with-skills:
+    code: [yami-wiki-agent-plugin/skills/]
+  ship-plugin-manifests:
+    code: [yami-wiki-agent-plugin/.claude-plugin/, yami-wiki-agent-plugin/.codex-plugin/, yami-wiki-agent-plugin/.agents/, yami-wiki-agent-plugin/package.json]
