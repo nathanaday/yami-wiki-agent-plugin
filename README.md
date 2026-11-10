@@ -7,7 +7,7 @@ The plugin is an MCP server and five skills that say how to use its tools. The s
 ## Requirements
 
 - Node 22 or later.
-- An Obsidian vault that has a `.obsidian/` or an `internal/wiki/` folder. The server refuses any other folder, so a mistyped path never turns a random folder into a vault.
+- An Obsidian vault that has a `.obsidian/` folder, a `.yami.json` file, or an `internal/wiki/` folder. The server refuses any other folder, so a mistyped path never turns a random folder into a vault.
 - Claude Code or Codex, signed in. An ingest runs on one of them.
 
 ## Install
@@ -36,7 +36,7 @@ The server takes its vault from the first of these that names one:
 
 1. `YAMI_WIKI_VAULT`, which the Vault option of Claude Code sets.
 2. `~/.config/yami-wiki/config.json` (or `$XDG_CONFIG_HOME/yami-wiki/config.json`), which connecting from a session writes.
-3. The working directory, when it holds `internal/wiki/`.
+3. The working directory, when it holds `.yami.json` or `internal/wiki/`.
 
 Because the config file outlives the session, you connect once and every later session in any project uses that vault. An ingest runs on Claude Code by default; set `YAMI_WIKI_AGENT=codex`, or `"agent": "codex"` in the config file, to run it on Codex.
 
@@ -81,7 +81,7 @@ In Claude Code each skill is a command such as `/yami-wiki:ask`.
 
 - **Nothing under `wiki/` changes without you.** `wiki_change` writes a change document under `internal/wiki/changes/` with `status: proposed`, and `wiki_ingest` starts a session that proposes one. You approve or reject it in Obsidian, in the change document or the Yami Wiki panel. The plugin has no tool that approves.
 - **An ingest runs inside the server** on your own Claude Code or Codex, and you can watch its session in Obsidian. It lives as long as the agent session that started it; when that session ends first, resume the ingest in Obsidian.
-- **The first call that connects to a vault enables the wiki module there**, as the Obsidian plugin does at load: it writes the module's documents under `internal/wiki/` and `Yami.base` when they are missing. Keep this plugin and the Obsidian plugin on the same library version (this release uses yami 0.20.0), or each may rewrite an unedited module document to its own version's text.
+- **The first call that connects to a vault enables the wiki module there**, as the Obsidian plugin does at load: it writes the module's documents under `internal/wiki/` when they are missing, or under the internal folder that the vault's `.yami.json` names. Keep this plugin and the Obsidian plugin on the same library version (this release uses yami 0.20.0), or each may rewrite an unedited module document to its own version's text.
 - **Inside a vault, the agent may see the wiki tools twice** when a Duet or Yami Wiki conversation runs with this plugin on: the vault's own tools and this server's. Both work on the same vault. Turn the plugin off for that project if the duplicates bother you.
 
 ## Network Use and Privacy
