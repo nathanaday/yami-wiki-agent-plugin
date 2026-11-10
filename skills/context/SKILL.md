@@ -7,8 +7,8 @@ description: Gather what the user's wiki knows that bears on a task outside the 
 The user keeps what they know in a wiki in their Obsidian vault. Before work in a project the wiki describes, read what it says, so the work follows the user's own decisions, names, and constraints.
 
 1. **The subjects.** From the task and the project, list the names the wiki may hold: the systems, services, libraries, protocols, formats, people, decisions, and terms the task touches. The project's README and the names of its folders and files give most of them. Ten to twenty names is right.
-2. **Where each stands.** Call `wiki_match` once with every name. A `hit` is a topic or source that holds the name or an alias; `near` names notes close to it; `new` means the wiki has no note on it.
-3. **Search the task.** Call `wiki_search` with the task in one sentence as `text`, `limit` 10, and once more with `algorithm: "hop2"` to add the notes linked from the best hits. For a hit that matters, call `wiki_neighbors` with the note to see the tags around it, and `wiki_search` with `tags` for a tag that fits the task.
+2. **Where each stands.** Call `wiki_match` once with every name. A `hit` is a page or a source that holds the name or an alias; `near` names notes close to it; `new` means the wiki has no note on it.
+3. **Search the task.** Call `wiki_search` with the task in one sentence as `text`, `limit` 10, and once more with `algorithm: "hop2"` to add the notes linked from the best hits. For a hit that matters, call `wiki_neighbors` with the note to see the tags around it, and `wiki_search` with `tags` for a tag that fits the task. A `portal` of a tag links its pages in groups: read it first when the task covers the whole tag.
 4. **Read.** Call `wiki_read` on the hits and the matches that bear on the task, at most about ten notes, and follow a `[[link]]` one hop when a note defers to another.
 5. **The brief.** In your reply, short:
    - **What the wiki says.** The facts, decisions, and constraints that bear on the task, each with a `[[link]]` to its note and the note's vault path once, so the user can open it.

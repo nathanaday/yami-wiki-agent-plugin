@@ -18,7 +18,8 @@ export interface VaultReport {
   source: string;
   /** The notes the index holds. */
   notes: number;
-  topics: number;
+  /** The pages of the wiki, of every template. */
+  pages: number;
   sources: number;
   /** The change plans that wait for approval. */
   proposed: number;
@@ -36,7 +37,7 @@ async function report(host: Host, connection: Connection, warning?: string): Pro
     vault: connection.root,
     source: describeSource(connection.source, host.configFile),
     notes: notes.length,
-    topics: notes.filter((note) => note.type === "topic").length,
+    pages: notes.filter((note) => wiki.isPage(note)).length,
     sources: notes.filter((note) => note.type === "source").length,
     proposed: (await wiki.changes()).length,
     agent: connection.agent,
@@ -80,7 +81,7 @@ export function hostTools(host: Host): AgentTool[] {
   return [
     defineTool({
       name: "wiki_vault",
-      description: `The vault this server works in, with its counts: notes, topics, sources, and the change plans that wait for approval. With set, points the server at another vault: the folder of an Obsidian vault that has Yami Wiki (its .obsidian/ folder, .yami.json, or internal/wiki/ folder is checked first), recorded for the next start. Call it with nothing when a wiki tool says that no vault is connected, or to tell the user where the wiki is.`,
+      description: `The vault this server works in, with its counts: notes, pages, sources, and the change plans that wait for approval. With set, points the server at another vault: the folder of an Obsidian vault that has Yami Wiki (its .obsidian/ folder, .yami.json, or internal/wiki/ folder is checked first), recorded for the next start. Call it with nothing when a wiki tool says that no vault is connected, or to tell the user where the wiki is.`,
       input: { set: z.string().optional().describe("The vault to work in from now on: an absolute path, or one that starts with ~.") },
       title: ({ set }) => (set ? `Use the vault ${set.slice(0, 60)}` : "The wiki's vault"),
       run: async ({ set }) => {
@@ -179,7 +180,7 @@ export function instructions(host: Host): string {
     // A bad .yami.json is the connection's to report, at the first tool call.
   }
   return [
-    `The Yami wiki of an Obsidian vault: topics in ${folders.topics}/ cited to sources in ${folders.sources}/, and every other note of the vault, outside your working directory. ${where}`,
+    `The Yami wiki of an Obsidian vault: pages in ${folders.pages}/, each of a template in ${folders.templates}/ that its type names (wiki_templates lists them), cited to sources in ${folders.sources}/, and every other note of the vault, outside your working directory. ${where}`,
     `To answer from the wiki: wiki_search, then wiki_read the best notes (or Read <vault>/<path>), follow a link one hop when needed, and answer with a [[link]] on each claim. Say what the wiki does not cover instead of filling the gap from general knowledge without saying so. wiki_match says where names stand; wiki_neighbors walks the tags.`,
     `The wiki changes only through wiki_change, which proposes a change document, and wiki_ingest, which captures files and runs an ingest session that proposes one. ${APPROVAL} Never write a file of the vault yourself.`,
   ].join("\n");

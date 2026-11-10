@@ -1,6 +1,6 @@
 # Yami Wiki for Claude Code and Codex
 
-[Yami Wiki](https://github.com/nathanaday/yami-wiki) keeps an LLM wiki in your Obsidian vault: topics cited to sources, changed only through plans you approve. Agents inside the vault can search and grow that wiki, but an agent at work in a codebase or a paper cannot see it. With this plugin, Claude Code or Codex in any project can answer from your wiki with a link on each claim, gather what the wiki knows before a task, check the wiki's health, and propose new topics from your files.
+[Yami Wiki](https://github.com/nathanaday/yami-wiki) keeps an LLM wiki in your Obsidian vault: pages of a template, such as topics, events, and glossaries, cited to sources and changed only through plans you approve. Agents inside the vault can search and grow that wiki, but an agent at work in a codebase or a paper cannot see it. With this plugin, Claude Code or Codex in any project can answer from your wiki with a link on each claim, gather what the wiki knows before a task, check the wiki's health, and propose new topics from your files.
 
 The plugin is an MCP server and five skills that say how to use its tools. The server runs the same library as the Obsidian plugin, [yami](https://github.com/nathanaday/yami), over your vault's folder, so its tools have the same names and behavior as the ones the vault's agents use. Nothing in the wiki changes until you approve the change in Obsidian.
 
@@ -72,7 +72,7 @@ In Claude Code each skill is a command such as `/yami-wiki:ask`.
 
 | Tool | What it does |
 | --- | --- |
-| `wiki_search`, `wiki_match`, `wiki_lint`, `wiki_tags`, `wiki_neighbors`, `wiki_chunks`, `wiki_citations`, `wiki_change`, `wiki_ingest`, `wiki_figure`, `wiki_export`, `wiki_import`, `wiki_checkout` | The wiki module's tools, as the vault's agents have them. The [library README](https://github.com/nathanaday/yami/blob/yami-0.23.0/yami/README.md#the-wiki-module) describes each. |
+| `wiki_search`, `wiki_match`, `wiki_lint`, `wiki_tags`, `wiki_templates`, `wiki_neighbors`, `wiki_chunks`, `wiki_citations`, `wiki_change`, `wiki_ingest`, `wiki_figure`, `wiki_export`, `wiki_import`, `wiki_checkout` | The wiki module's tools, as the vault's agents have them. `wiki_templates` lists the templates of the vault's pages, its own among them. The [library README](https://github.com/nathanaday/yami/blob/yami-0.24.0/yami/README.md#the-wiki-module) describes each. |
 | `wiki_vault` | Reports the vault and its counts. With `set`, connects to another vault and records it in the config file. |
 | `wiki_read` | Returns a note, by its path or its `[[link]]`, with its file on disk, since the vault lies outside the agent's working directory. |
 | `wiki_changes` | Lists the change plans that wait for your approval, or the changes of any status. |
@@ -81,7 +81,8 @@ In Claude Code each skill is a command such as `/yami-wiki:ask`.
 
 - **Nothing under `wiki/` changes without you.** `wiki_change` writes a change document under `internal/wiki/changes/` with `status: proposed`, and `wiki_ingest` starts a session that proposes one. You approve or reject it in Obsidian, in the change document or the Yami Wiki panel. The plugin has no tool that approves.
 - **An ingest runs inside the server** on your own Claude Code or Codex, and you can watch its session in Obsidian. It lives as long as the agent session that started it; when that session ends first, resume the ingest in Obsidian.
-- **The first call that connects to a vault enables the wiki module there**, as the Obsidian plugin does at load: it writes the module's documents under `internal/wiki/` when they are missing, or under the internal folder that the vault's `.yami.json` names. Keep this plugin and the Obsidian plugin on the same library version (this release uses yami 0.23.0), or each may rewrite an unedited module document to its own version's text.
+- **The first call that connects to a vault enables the wiki module there**, as the Obsidian plugin does at load: it writes the module's documents under `internal/wiki/` when they are missing, or under the internal folder that the vault's `.yami.json` names. Keep this plugin and the Obsidian plugin on the same library version (this release uses yami 0.24.0), or each may rewrite an unedited module document to its own version's text.
+- **A wiki from before yami 0.24 moves its pages.** At the first connection, the library moves `wiki/topics/` to `wiki/pages/`, with every link into it, as the Obsidian plugin does at its first start. The templates of the pages appear in `internal/wiki/templates/`.
 - **Inside a vault, the agent may see the wiki tools twice** when a Duet or Yami Wiki conversation runs with this plugin on: the vault's own tools and this server's. Both work on the same vault. Turn the plugin off for that project if the duplicates bother you.
 
 ## Network Use and Privacy

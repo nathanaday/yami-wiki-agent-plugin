@@ -1,7 +1,7 @@
 {
   "name": "yami-wiki",
   "displayName": "Yami Wiki",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Your Yami wiki, for an agent outside the vault: search, read, match, lint, and ingest with the same tools the vault's agents have, from any project.",
   "author": {
     "name": "nathanaday",
